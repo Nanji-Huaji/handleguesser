@@ -14,6 +14,17 @@ st.set_page_config(
 
 st.title("Handle Guesser")
 
+st.sidebar.title("Handle Guesser")
+st.sidebar.markdown(
+    """
+南极滑稽制作
+
+[GitHub](https://github.com/Nanji-Huaji)
+
+[博客](https://blog.nanjihuaji.top/)
+"""
+)
+
 # 功能区
 
 warn_placeholder = st.empty()
