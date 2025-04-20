@@ -96,6 +96,21 @@ def get_shengdiao(pinyin: str) -> str:
     return None
 
 
+def get_condition(is_exclusive: bool, first_input: str, other_input: str) -> dict:
+    first_conditions = first_input.split(",")
+    other_conditions = other_input.split(",")
+
+    # 确保 first_conditions 长度为 4，不足时用 None 补足
+    while len(first_conditions) < 4:
+        first_conditions.append(None)
+
+    return {
+        "is_exclusion": is_exclusive,
+        "first_conditions": first_conditions,
+        "other_conditions": other_conditions,
+    }
+
+
 def input_guess():
     """
     根据用户输入的格式解析条件并返回条件列表。
@@ -155,6 +170,8 @@ def idiom_filter(condition: dict) -> list:
             # 判断是否满足第1字到第4字的条件
             match_first = True
             for i in range(4):
+                if first_conditions == ["", "", "", ""] or first_conditions == [None, None, None, None]:
+                    break
                 condition = first_conditions[i]
                 if condition:
                     # 如果条件是一个汉字
@@ -202,6 +219,8 @@ def idiom_filter(condition: dict) -> list:
             # 判断是否满足第1字到第4字的排除条件
             match_first = False
             for i in range(4):
+                if first_conditions == ["", "", "", ""] or first_conditions == [None, None, None, None]:
+                    break
                 condition = first_conditions[i]
                 if condition:
                     # 如果条件是一个汉字
@@ -251,6 +270,20 @@ def idiom_filter(condition: dict) -> list:
     filtered_idioms = [list(item.keys())[0] for item in filtered_idioms]
 
     return filtered_idioms
+
+
+def joint_idiom_filter(inclusive_condition, exclusive_condition):
+    if inclusive_condition["first_conditions"] and inclusive_condition["other_conditions"] is None:
+        return idiom_filter(exclusive_condition)
+    if exclusive_condition["first_conditions"] and exclusive_condition["other_conditions"] is None:
+        return idiom_filter(inclusive_condition)
+    inclusive_condition = idiom_filter(inclusive_condition)
+    exclusive_condition = idiom_filter(exclusive_condition)
+    # 取交集
+    result = list(set(inclusive_condition) & set(exclusive_condition))
+    # 对结果进行排序
+    result.sort(key=lambda x: idioms[x]["frequency"], reverse=True)
+    return result
 
 
 if __name__ == "__main__":
