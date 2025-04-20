@@ -1,2 +1,4 @@
 import jieba
-from pypinyin import pinyin, lazy_pinyin, Style
+import json
+import guesser
+from guesser import input_guess, idiom_filter
